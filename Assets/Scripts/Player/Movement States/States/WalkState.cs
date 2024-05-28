@@ -16,6 +16,8 @@ public class WalkState : MovementBaseState
 
         if (movement.yInput < 0) movement.curMoveSpeed = movement.walkBackSpeed;
         else movement.curMoveSpeed = movement.walkSpeed;
+
+        if (movement.ir.isCover) ExitState(movement, movement.Cover);
     }
 
     void ExitState(MovementStateManager movement, MovementBaseState state)

@@ -28,7 +28,7 @@ public class MovementStateManager : MonoBehaviour
 
     #region Input
     CharacterController controller;
-    private InputReader ir;
+    [HideInInspector] public InputReader ir;
     #endregion
 
     [HideInInspector] public MovementBaseState curState;
@@ -36,6 +36,9 @@ public class MovementStateManager : MonoBehaviour
     public IdleState Idle = new IdleState();
     public WalkState Walk = new WalkState();
     public RunState Run = new RunState();
+    public CoverState Cover = new CoverState();
+
+    public bool cover;
 
     private void Start()
     {
@@ -70,7 +73,10 @@ public class MovementStateManager : MonoBehaviour
 
     private void GetDirectionAndMove()
     {
-        dir = transform.forward * ir.MovementValue.y + transform.right * ir.MovementValue.x;
+        if(cover)
+            dir = transform.forward * 0 + transform.right * ir.MovementValue.x;
+        else
+            dir = transform.forward * ir.MovementValue.y + transform.right * ir.MovementValue.x;
 
         controller.Move(dir.normalized * curMoveSpeed * Time.deltaTime);
     }

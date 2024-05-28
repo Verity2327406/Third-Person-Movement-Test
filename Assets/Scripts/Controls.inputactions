@@ -49,6 +49,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Cover",
+                    "type": "Button",
+                    "id": "dfd03915-d673-48fb-97db-c1ee49c3f0e1",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -148,6 +157,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Reload",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7cbfd31f-58bc-470f-8549-8ab40017d0bf",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Cover",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

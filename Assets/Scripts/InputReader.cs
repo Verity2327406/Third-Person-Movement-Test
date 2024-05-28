@@ -13,6 +13,7 @@ public class InputReader : MonoBehaviour, Controls.IPlayerActions
     public bool isShooting {  get; private set; }
     public bool isShootingSemi {  get; private set; }
     public bool isReload {  get; private set; }
+    public bool isCover {  get; private set; }
     #endregion
 
     #region Private Values
@@ -59,5 +60,10 @@ public class InputReader : MonoBehaviour, Controls.IPlayerActions
     public void OnReload(InputAction.CallbackContext context)
     {
         isReload = context.performed;
+    }
+
+    public void OnCover(InputAction.CallbackContext context)
+    {
+        isCover = context.performed;
     }
 }
