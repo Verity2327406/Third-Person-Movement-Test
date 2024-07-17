@@ -194,6 +194,12 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""NoControls"",
+            ""id"": ""97d10d58-8c9e-4a91-bfdb-fe6e94236489"",
+            ""actions"": [],
+            ""bindings"": []
         }
     ],
     ""controlSchemes"": []
@@ -206,6 +212,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
         m_Player_Reload = m_Player.FindAction("Reload", throwIfNotFound: true);
         m_Player_Cover = m_Player.FindAction("Cover", throwIfNotFound: true);
+        // NoControls
+        m_NoControls = asset.FindActionMap("NoControls", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -349,6 +357,44 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // NoControls
+    private readonly InputActionMap m_NoControls;
+    private List<INoControlsActions> m_NoControlsActionsCallbackInterfaces = new List<INoControlsActions>();
+    public struct NoControlsActions
+    {
+        private @Controls m_Wrapper;
+        public NoControlsActions(@Controls wrapper) { m_Wrapper = wrapper; }
+        public InputActionMap Get() { return m_Wrapper.m_NoControls; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(NoControlsActions set) { return set.Get(); }
+        public void AddCallbacks(INoControlsActions instance)
+        {
+            if (instance == null || m_Wrapper.m_NoControlsActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_NoControlsActionsCallbackInterfaces.Add(instance);
+        }
+
+        private void UnregisterCallbacks(INoControlsActions instance)
+        {
+        }
+
+        public void RemoveCallbacks(INoControlsActions instance)
+        {
+            if (m_Wrapper.m_NoControlsActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(INoControlsActions instance)
+        {
+            foreach (var item in m_Wrapper.m_NoControlsActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_NoControlsActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public NoControlsActions @NoControls => new NoControlsActions(this);
     public interface IPlayerActions
     {
         void OnMovement(InputAction.CallbackContext context);
@@ -357,5 +403,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         void OnFire(InputAction.CallbackContext context);
         void OnReload(InputAction.CallbackContext context);
         void OnCover(InputAction.CallbackContext context);
+    }
+    public interface INoControlsActions
+    {
     }
 }

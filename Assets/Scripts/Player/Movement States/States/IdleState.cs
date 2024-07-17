@@ -16,7 +16,5 @@ public class IdleState : MovementBaseState
             if (movement.isSprint) movement.SwitchState(movement.Run);
             else movement.SwitchState(movement.Walk);
         }
-
-        if (movement.ir.isCover) movement.SwitchState(movement.Cover);
     }
 }

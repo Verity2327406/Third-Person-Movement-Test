@@ -172,6 +172,12 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "NoControls",
+            "id": "97d10d58-8c9e-4a91-bfdb-fe6e94236489",
+            "actions": [],
+            "bindings": []
         }
     ],
     "controlSchemes": []

@@ -31,6 +31,7 @@ public class AimStateManager : MonoBehaviour
     float yFollowPos, ogYPos;
     [SerializeField] float shoulderSwapSpeed = 10;
     MovementStateManager movement;
+    public bool inCover;
 
     private void Start()
     {
