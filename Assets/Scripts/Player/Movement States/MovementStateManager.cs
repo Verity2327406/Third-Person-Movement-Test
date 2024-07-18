@@ -5,6 +5,7 @@ using UnityEngine;
 public class MovementStateManager : MonoBehaviour, ICharacterMover
 {
     #region Movement
+    [Header("Movement")]
     public float curMoveSpeed;
     public float walkSpeed = 3, walkBackSpeed = 2;
     public float runSpeed = 7, runBackSpeed = 5;
@@ -20,22 +21,26 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
     #endregion
 
     #region GroundCheck
+    [Header("Ground Check")]
     [SerializeField] float groundYOffset;
     [SerializeField] LayerMask groundMask;
     Vector3 spherePos;
     #endregion
 
     #region Gravity
+    [Header("Gravity")]
     [SerializeField] float gravity = -9.81f;
     Vector3 velocity;
     #endregion
 
     #region Input
+    [Header("Input")]
     CharacterController controller;
     [HideInInspector] public InputReader ir;
     #endregion
 
     #region Cover
+    [Header("Cover")]
     public bool cover;
     [SerializeField] float maxCoverDistance = 3;
     public LayerMask coverLayerMask;
@@ -53,14 +58,18 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
     bool autoMoverActive;
     Vector3 autoMoverTarget;
     float autoMoverStoppingDist;
+
+    public WeaponManager weaponManager;
     #endregion
 
+    #region Statemachine
     [HideInInspector] public MovementBaseState curState;
 
     public IdleState Idle = new IdleState();
     public WalkState Walk = new WalkState();
     public RunState Run = new RunState();
     public CoverState Cover = new CoverState();
+    #endregion
 
     private void Start()
     {
@@ -68,6 +77,7 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
         controller = GetComponent<CharacterController>();
         ir = GetComponent<InputReader>();
 
+        //Allows change of radius, if needed for specific mission or player, without breaking autoMover
         autoMoverStoppingDist = controller.radius + .01f;
 
         SwitchState(Idle);
@@ -78,6 +88,7 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
         xInput = ir.MovementValue.x;
         yInput = ir.MovementValue.y;
 
+        #region Movement
         GetDirectionAndMove();
         Gravity();
 
@@ -85,6 +96,7 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
         _a.SetFloat("vInput", yInput);
 
         isSprint = ir.SprintValue;
+        #endregion
 
         #region Cover
         if (ir.isCover && IsNearCover())
@@ -122,6 +134,7 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
         curState.EnterState(this);
     }
 
+    #region Movement
     private void GetDirectionAndMove()
     {
         if (cover) return;
@@ -145,6 +158,7 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
 
         controller.Move(velocity * Time.deltaTime);
     }
+    #endregion
 
     //private void OnDrawGizmos()
     //{
@@ -173,12 +187,16 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
     {
         if (Physics.Raycast(highCoverDetection.position, highCoverDetection.forward, maxCoverDistance, coverLayerMask))
         {
+            // High cover, so cant always shoot
             inHighCover = true;
+            weaponManager.canShoot = false;
             Debug.Log("High");
         }
         else
         {
+            // Low cover, so can always shoot
             inHighCover = false;
+            weaponManager.canShoot = true;
             Debug.Log("Low");
         }
     }
@@ -228,10 +246,11 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
 
         if (!didLeftCoverDetectHit || !didRightCoverDetectHit)
         {
-            // End of Cover
+            // At end of Cover
             if (inHighCover)
             {
-                //can aim
+                //Only shoot if at the end of cover if its a wall
+                weaponManager.canShoot = true;
             }
 
             if (!didLeftCoverDetectHit)
@@ -246,7 +265,8 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
         {
             if (inHighCover)
             {
-                //can't aim
+                //Can't shoot since not at end of cover
+                weaponManager.canShoot = false;
             }
 
             SetCoverDirection(coverSurfaceDirection, Vector3.zero);

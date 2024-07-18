@@ -2326,6 +2326,7 @@ MonoBehaviour:
   leftCoverDetector: {fileID: 1121765899}
   horizontalCoverDetectorLength: 0.75
   inHighCover: 0
+  weaponManager: {fileID: 6678914902316200814}
 --- !u!114 &1779386114
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5514,6 +5515,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fireRate: 0.1
   semiAuto: 0
+  canShoot: 0
   barrelPos: {fileID: 1788242146}
   audioClip: {fileID: 8300000, guid: 343d9bc8110973e4b940815a17ec175b, type: 3}
 --- !u!114 &6678914902316200815

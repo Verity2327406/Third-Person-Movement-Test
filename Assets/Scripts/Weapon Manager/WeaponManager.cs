@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class WeaponManager : MonoBehaviour
 {
+    [Header("Weapon Settings")]
     [SerializeField] float fireRate;
     float fireRateTimer;
     [SerializeField] bool semiAuto;
+    [HideInInspector] public bool canShoot = true;
     [SerializeField] Transform barrelPos;
 
     [SerializeField] AudioClip audioClip;
@@ -41,6 +43,7 @@ public class WeaponManager : MonoBehaviour
     bool ShouldFire()
     {
         fireRateTimer += Time.deltaTime;
+        if (!canShoot) return false;
         if (fireRateTimer < fireRate) return false;
         if (_weaponAmmo.curAmmo == 0) return false;
         if (action.curState == action.Reload) return false;

@@ -5,20 +5,28 @@ using UnityEngine.Animations.Rigging;
 
 public class ActionStateManager : MonoBehaviour
 {
+    #region Statemachine
     [HideInInspector] public ActionBaseState curState;
     public ReloadState Reload = new();
     public DefaultState Default = new();
+    #endregion
 
+    #region Weapon Stats
+    [Header("Weapon Stats")]
     public GameObject curWeapon;
     public WeaponAmmo ammo;
 
     [HideInInspector] public InputReader _ir;
     [HideInInspector] public Animator _a;
+    #region
 
+    #region Settings
+    [Header("Settings")]
     public MultiAimConstraint rHandAim;
     public TwoBoneIKConstraint lHandIk;
 
     AudioSource audioSource;
+    #endregion
 
     private void Start()
     {
