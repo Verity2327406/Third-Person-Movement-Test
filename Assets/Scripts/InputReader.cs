@@ -20,6 +20,10 @@ public class InputReader : MonoBehaviour, Controls.IPlayerActions, Controls.INoC
     private Controls _controls;
     #endregion
 
+    #region Events
+    public event Action exitCover;
+    #endregion
+
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -75,5 +79,10 @@ public class InputReader : MonoBehaviour, Controls.IPlayerActions, Controls.INoC
     public void OnCover(InputAction.CallbackContext context)
     {
         isCover = context.performed;
+    }
+
+    public void OnExitCover(InputAction.CallbackContext context)
+    {
+        if(context.performed) exitCover?.Invoke();
     }
 }

@@ -80,6 +80,15 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ExitCover"",
+                    ""type"": ""Button"",
+                    ""id"": ""f3e8ccfe-e466-454c-b001-52e2df395782"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -192,6 +201,17 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""action"": ""Cover"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""51f67c10-2048-4d6d-9b7b-5f5571ea8c80"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ExitCover"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -212,6 +232,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
         m_Player_Reload = m_Player.FindAction("Reload", throwIfNotFound: true);
         m_Player_Cover = m_Player.FindAction("Cover", throwIfNotFound: true);
+        m_Player_ExitCover = m_Player.FindAction("ExitCover", throwIfNotFound: true);
         // NoControls
         m_NoControls = asset.FindActionMap("NoControls", throwIfNotFound: true);
     }
@@ -281,6 +302,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Fire;
     private readonly InputAction m_Player_Reload;
     private readonly InputAction m_Player_Cover;
+    private readonly InputAction m_Player_ExitCover;
     public struct PlayerActions
     {
         private @Controls m_Wrapper;
@@ -291,6 +313,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         public InputAction @Fire => m_Wrapper.m_Player_Fire;
         public InputAction @Reload => m_Wrapper.m_Player_Reload;
         public InputAction @Cover => m_Wrapper.m_Player_Cover;
+        public InputAction @ExitCover => m_Wrapper.m_Player_ExitCover;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -318,6 +341,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Cover.started += instance.OnCover;
             @Cover.performed += instance.OnCover;
             @Cover.canceled += instance.OnCover;
+            @ExitCover.started += instance.OnExitCover;
+            @ExitCover.performed += instance.OnExitCover;
+            @ExitCover.canceled += instance.OnExitCover;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -340,6 +366,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Cover.started -= instance.OnCover;
             @Cover.performed -= instance.OnCover;
             @Cover.canceled -= instance.OnCover;
+            @ExitCover.started -= instance.OnExitCover;
+            @ExitCover.performed -= instance.OnExitCover;
+            @ExitCover.canceled -= instance.OnExitCover;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -403,6 +432,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         void OnFire(InputAction.CallbackContext context);
         void OnReload(InputAction.CallbackContext context);
         void OnCover(InputAction.CallbackContext context);
+        void OnExitCover(InputAction.CallbackContext context);
     }
     public interface INoControlsActions
     {

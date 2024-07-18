@@ -75,7 +75,6 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
     {
         _a = GetComponent<Animator>();
         controller = GetComponent<CharacterController>();
-        ir = GetComponent<InputReader>();
 
         //Allows change of radius, if needed for specific mission or player, without breaking autoMover
         autoMoverStoppingDist = controller.radius + .01f;
@@ -105,17 +104,13 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
             MoveCharacterToCover();
         }
 
-        if (cover && autoMoverActive)
-        {
-            MoveToCover();
-        }
+        if (ir.isCover && cover) ExitCover();
 
-        if (cover && !autoMoverActive)
-        {
-            CoverMove();
-        }
+        if (cover && autoMoverActive) MoveToCover();
 
-        if (cover)
+        if (cover && !autoMoverActive) CoverMove();
+
+        if (cover && !ir.isCover)
         {
             SetCoverType();
             InCoverMovementRestrictor();
@@ -297,5 +292,21 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
         inCoverMoveDirection = moveDirection;
         inCoverProhibitedDirection = directionToProhibit;
     }
+
+    private void ExitCover()
+    {
+        cover = false;
+    }
     #endregion
+
+    private void OnEnable()
+    {
+        ir = GetComponent<InputReader>();
+        ir.exitCover += ExitCover;
+    }
+
+    private void OnDisable()
+    {
+        ir.exitCover -= ExitCover;
+    }
 }

@@ -2418,7 +2418,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   curWeapon: {fileID: 6678914902316200813}
-  ammo: {fileID: 0}
+  ammo: {fileID: 6678914902316200815}
   _ir: {fileID: 0}
   _a: {fileID: 0}
   rHandAim: {fileID: 2073128432}
@@ -5515,7 +5515,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fireRate: 0.1
   semiAuto: 0
-  canShoot: 0
+  canShoot: 1
   barrelPos: {fileID: 1788242146}
   audioClip: {fileID: 8300000, guid: 343d9bc8110973e4b940815a17ec175b, type: 3}
 --- !u!114 &6678914902316200815

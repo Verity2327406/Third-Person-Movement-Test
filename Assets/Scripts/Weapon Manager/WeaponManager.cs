@@ -8,7 +8,7 @@ public class WeaponManager : MonoBehaviour
     [SerializeField] float fireRate;
     float fireRateTimer;
     [SerializeField] bool semiAuto;
-    [HideInInspector] public bool canShoot = true;
+    public bool canShoot = true;
     [SerializeField] Transform barrelPos;
 
     [SerializeField] AudioClip audioClip;
