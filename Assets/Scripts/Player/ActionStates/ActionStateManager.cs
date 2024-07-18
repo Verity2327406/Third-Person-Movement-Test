@@ -18,7 +18,7 @@ public class ActionStateManager : MonoBehaviour
 
     [HideInInspector] public InputReader _ir;
     [HideInInspector] public Animator _a;
-    #region
+    #endregion
 
     #region Settings
     [Header("Settings")]
