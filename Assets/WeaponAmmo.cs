@@ -8,6 +8,7 @@ public class WeaponAmmo : MonoBehaviour
 {
     public int clipSize;
     public int extraAmmo;
+    public int maxExtraAmmo;
     [HideInInspector] public int curAmmo;
 
     private TMP_Text ammoText;
