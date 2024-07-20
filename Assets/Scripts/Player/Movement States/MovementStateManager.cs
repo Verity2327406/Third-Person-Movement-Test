@@ -116,6 +116,12 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
             InCoverMovementRestrictor();
         }
 
+        if (cover && ir.ADSValue) transform.GetChild(1).localRotation = new Quaternion(Quaternion.identity.x, 0, Quaternion.identity.z, Quaternion.identity.w);
+        else if (cover && !ir.ADSValue) transform.GetChild(1).localRotation = new Quaternion(Quaternion.identity.x, 180, Quaternion.identity.z, Quaternion.identity.w);
+
+        _a.SetBool("InHighCover", inHighCover);
+        GetComponent<AimStateManager>().ShootFromHighCoverSetup(inCoverProhibitedDirection, inHighCover && ir.ADSValue);
+
         Debug.DrawRay(transform.position, transform.forward * maxCoverDistance, Color.red);
         Debug.DrawRay(highCoverDetection.position, highCoverDetection.forward * maxCoverDistance, Color.red);
         #endregion
@@ -199,6 +205,7 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
     private void MoveCharacterToCover()
     {
         cover = true;
+        transform.GetChild(1).localRotation = new Quaternion(Quaternion.identity.x, 180, Quaternion.identity.z, Quaternion.identity.w);
         BeginMoveToCover(coverHitPoint);
     }
 
@@ -215,6 +222,7 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
 
         if (Vector3.Distance(transform.position, autoMoverTarget) > autoMoverStoppingDist)
         {
+            // Moving to cover
             _a.SetBool("Running", true);
             _a.SetFloat("vInput", 1);
             _a.SetFloat("hInput", 0);
@@ -222,14 +230,17 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
         }
         else
         {
+            // In Cover
             autoMoverActive = false;
             autoMoverTarget = Vector3.zero;
+            _a.SetTrigger("EnterCover");
             ir.EnableControls();
         }
     }
 
     private void InCoverMovementRestrictor()
     {
+        _a.SetBool("Running", false);
         bool didRightCoverDetectHit = Physics.Raycast(rightCoverDetector.position, rightCoverDetector.forward, horizontalCoverDetectorLength, coverLayerMask);
         bool didLeftCoverDetectHit = Physics.Raycast(leftCoverDetector.position, leftCoverDetector.forward, horizontalCoverDetectorLength, coverLayerMask);
 
@@ -276,6 +287,9 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
 
     private void CoverMove()
     {
+        GetComponent<AimStateManager>().oldAxis = transform.localEulerAngles.y;
+        Debug.Log(transform.localEulerAngles.y);
+
         Vector3 perpDirection = Vector3.Cross(inCoverMoveDirection, Vector3.up);
         transform.forward = perpDirection;
 
@@ -293,9 +307,13 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
         inCoverProhibitedDirection = directionToProhibit;
     }
 
-    private void ExitCover()
+    public void ExitCover()
     {
+        if (!cover) return;
+
         cover = false;
+        transform.GetChild(1).transform.localRotation = new Quaternion(Quaternion.identity.x, 0, Quaternion.identity.z, Quaternion.identity.w);
+        _a.SetTrigger("ExitCover");
     }
     #endregion
 
