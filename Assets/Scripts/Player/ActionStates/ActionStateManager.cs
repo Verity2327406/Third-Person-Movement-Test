@@ -20,6 +20,11 @@ public class ActionStateManager : MonoBehaviour
 
     AudioSource audioSource;
 
+    private void Awake()
+    {
+        ammo = curWeapon.GetComponent<WeaponAmmo>();
+    }
+
     private void Start()
     {
         _ir = FindAnyObjectByType<InputReader>().GetComponent<InputReader>();
@@ -27,8 +32,6 @@ public class ActionStateManager : MonoBehaviour
         audioSource = FindAnyObjectByType(typeof(AudioSource)) as AudioSource;
 
         SwitchState(Default);
-
-        ammo = curWeapon.GetComponent<WeaponAmmo>();
     }
 
     private void Update()
