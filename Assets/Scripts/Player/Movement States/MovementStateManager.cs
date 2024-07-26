@@ -14,6 +14,8 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
     [HideInInspector] public Vector3 dir;
     [HideInInspector] public float xInput, yInput;
     [HideInInspector] public bool isSprint {  get; private set; }
+
+    public bool canMove = true;
     public Vector3 inCoverMoveDirection { get; set; }
     public Vector3 inCoverProhibitedDirection { get; set; }
 
@@ -69,12 +71,15 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
     public WalkState Walk = new WalkState();
     public RunState Run = new RunState();
     public CoverState Cover = new CoverState();
+
+    AimStateManager aim;
     #endregion
 
     private void Start()
     {
         _a = GetComponent<Animator>();
         controller = GetComponent<CharacterController>();
+        aim = GetComponent<AimStateManager>();
 
         //Allows change of radius, if needed for specific mission or player, without breaking autoMover
         autoMoverStoppingDist = controller.radius + .01f;
@@ -141,7 +146,7 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
     #region Movement
     private void GetDirectionAndMove()
     {
-        if (cover) return;
+        if (cover || !canMove) return;
 
         dir = transform.forward * ir.MovementValue.y + transform.right * ir.MovementValue.x;
         controller.Move(dir.normalized * curMoveSpeed * Time.deltaTime);
@@ -208,7 +213,10 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
     private void MoveCharacterToCover()
     {
         cover = true;
+
         transform.GetChild(1).localRotation = new Quaternion(Quaternion.identity.x, 180, Quaternion.identity.z, Quaternion.identity.w);
+        aim.PrepCam();
+
         BeginMoveToCover(coverHitPoint);
     }
 
@@ -262,6 +270,7 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
                 weaponManager.canShoot = true;
             }
 
+            // Cover direction is set by checking which end we are at
             if (!didLeftCoverDetectHit)
             {
                 SetCoverDirection(coverSurfaceDirection, -coverSurfaceDirection);
@@ -277,7 +286,7 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
                 //Can't shoot since not at end of cover
                 weaponManager.canShoot = false;
             }
-
+            // Not in the middle of cover so can move both left or right
             SetCoverDirection(coverSurfaceDirection, Vector3.zero);
         }
 
@@ -290,8 +299,9 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
 
     private void CoverMove()
     {
+        if (!canMove) return;
+
         GetComponent<AimStateManager>().oldAxis = transform.localEulerAngles.y;
-        Debug.Log(transform.localEulerAngles.y);
 
         Vector3 perpDirection = Vector3.Cross(inCoverMoveDirection, Vector3.up);
         transform.forward = perpDirection;
@@ -315,7 +325,17 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
         if (!cover) return;
 
         cover = false;
+        canMove = true;
+        inHighCover = false;
+
+        aim.ResetCam();
+        aim.ResetCover();
+        weaponManager.canShoot = true;
+
         transform.GetChild(1).transform.localRotation = new Quaternion(Quaternion.identity.x, 0, Quaternion.identity.z, Quaternion.identity.w);
+        Transform camFollowPos = transform.GetChild(2);
+        camFollowPos.localEulerAngles = new Vector3(camFollowPos.localEulerAngles.x, 0,0);
+
         _a.SetTrigger("ExitCover");
     }
     #endregion

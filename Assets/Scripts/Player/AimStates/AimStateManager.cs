@@ -122,13 +122,30 @@ public class AimStateManager : MonoBehaviour
         aimingFromHighCover = inHighCover;
     }
 
+    public void ResetCam()
+    {
+        Debug.Log(xAxis);
+        Debug.Log(oldAxis);
+        xAxis = oldAxis;
+    }
+
+    public void PrepCam()
+    {
+        xAxis = 0;
+    }
+
+    public void ResetCover()
+    {
+        poppedOut = false;
+        aimingFromHighCover = false;
+        isBack = true;
+    }
+
     private void ExitAndWalk()
     {
         if(poppedOut && _ir.MovementValue.y > 0)
         {
             movement.ExitCover();
-            poppedOut = false;
-            xAxis = oldAxis;
         }
     }
 
@@ -140,6 +157,7 @@ public class AimStateManager : MonoBehaviour
             isBack = false;
             highCornerReturnPos = transform.position;
             transform.DOMove(shootFromHighCover, 0.25f);
+            movement.canMove = false;
         }
     }
 
@@ -150,10 +168,9 @@ public class AimStateManager : MonoBehaviour
 
         if(poppedOut && !isBack)
         {
+            ResetCover();
             transform.DOMove(highCornerReturnPos, .25f);
-            poppedOut = false;
-            aimingFromHighCover = false;
-            isBack = true;
+            movement.canMove = true;
         }
     }
 }
