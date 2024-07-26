@@ -12,6 +12,6 @@ public class HipFireState : AimBaseState
 
     public override void UpdateState(AimStateManager aim)
     {
-        if(aim._ir.ADSValue) aim.SwitchState(aim.Aim);
+        if(aim._ir.ADSValue && aim.movement.weaponManager.canShoot) aim.SwitchState(aim.Aim);
     }
 }

@@ -116,8 +116,11 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
             InCoverMovementRestrictor();
         }
 
-        if (cover && ir.ADSValue) transform.GetChild(1).localRotation = new Quaternion(Quaternion.identity.x, 0, Quaternion.identity.z, Quaternion.identity.w);
+        if (cover && ir.ADSValue && weaponManager.canShoot) transform.GetChild(1).localRotation = new Quaternion(Quaternion.identity.x, 0, Quaternion.identity.z, Quaternion.identity.w);
         else if (cover && !ir.ADSValue) transform.GetChild(1).localRotation = new Quaternion(Quaternion.identity.x, 180, Quaternion.identity.z, Quaternion.identity.w);
+
+        if(cover && !inHighCover)
+            weaponManager.canShoot = ir.ADSValue;
 
         _a.SetBool("InHighCover", inHighCover);
         GetComponent<AimStateManager>().ShootFromHighCoverSetup(inCoverProhibitedDirection, inHighCover && ir.ADSValue);

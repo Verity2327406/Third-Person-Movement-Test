@@ -32,7 +32,7 @@ public class AimStateManager : MonoBehaviour
     float xFollowPos;
     float yFollowPos, ogYPos;
     [SerializeField] float shoulderSwapSpeed = 10;
-    MovementStateManager movement;
+    public MovementStateManager movement { private set; get; }
 
     #region Cover
     [Header("Cover")]
