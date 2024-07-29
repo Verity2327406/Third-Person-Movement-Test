@@ -4,6 +4,8 @@ using UnityEngine;
 using Cinemachine;
 using UnityEngine.Rendering;
 using Unity.VisualScripting.ReorderableList;
+using DG.Tweening;
+using System.Xml.Serialization;
 
 public class AimStateManager : MonoBehaviour
 {
@@ -30,7 +32,21 @@ public class AimStateManager : MonoBehaviour
     float xFollowPos;
     float yFollowPos, ogYPos;
     [SerializeField] float shoulderSwapSpeed = 10;
-    MovementStateManager movement;
+    public MovementStateManager movement { private set; get; }
+
+    #region Cover
+    [Header("Cover")]
+    [Tooltip("Player offset from the cover")]
+    public float shootFromCoverOffset;
+
+    Vector3 shootFromHighCover;
+    Vector3 highCornerReturnPos;
+
+    bool aimingFromHighCover = false;
+    bool poppedOut = false;
+    bool isBack = true;
+    [HideInInspector] public float oldAxis;
+    #endregion
 
     private void Start()
     {
@@ -49,6 +65,7 @@ public class AimStateManager : MonoBehaviour
 
     private void Update()
     {
+        #region Player Cam
         xAxis += Input.GetAxisRaw("Mouse X") * mouseSens;
         yAxis -= Input.GetAxisRaw("Mouse Y") * mouseSens;
         yAxis = Mathf.Clamp(yAxis, -80, 80);
@@ -62,14 +79,26 @@ public class AimStateManager : MonoBehaviour
             aimPos.position = Vector3.Lerp(aimPos.position, hit.point, aimSmoothSpeed * Time.deltaTime);
 
         MoveCamera();
+        #endregion
+
+        #region Cover
+        PopOutAndShoot();
+        BackInCover();
+        ExitAndWalk();
+        #endregion
 
         curState.UpdateState(this);
     }
 
     private void LateUpdate()
     {
-        camFollowPos.localEulerAngles = new Vector3(yAxis, camFollowPos.localEulerAngles.y, camFollowPos.localEulerAngles.z);
-        transform.eulerAngles = new Vector3(transform.eulerAngles.x, xAxis, transform.eulerAngles.z);
+        if(movement.cover)
+            camFollowPos.localEulerAngles = new Vector3(yAxis, xAxis, camFollowPos.localEulerAngles.z);
+        else
+        {
+            camFollowPos.localEulerAngles = new Vector3(yAxis, camFollowPos.localEulerAngles.y, camFollowPos.localEulerAngles.z);
+            transform.eulerAngles = new Vector3(transform.eulerAngles.x, xAxis, transform.eulerAngles.z);
+        }
     }
 
     public void SwitchState(AimBaseState state)
@@ -86,4 +115,61 @@ public class AimStateManager : MonoBehaviour
         Vector3 newFollwPos = new Vector3(xFollowPos, yFollowPos, camFollowPos.localPosition.z);
         camFollowPos.localPosition = Vector3.Lerp(camFollowPos.localPosition, newFollwPos, shoulderSwapSpeed * Time.deltaTime);
     }
+
+    #region Cover
+    public void ShootFromHighCoverSetup(Vector3 direction, bool inHighCover)
+    {
+        shootFromHighCover = transform.position + (direction.normalized * shootFromCoverOffset);
+        aimingFromHighCover = inHighCover;
+    }
+
+    public void ResetCam()
+    {
+        xAxis = oldAxis;
+    }
+    public void PrepCam()
+    {
+        xAxis = 0;
+    }
+
+    public void ResetCover()
+    {
+        poppedOut = false;
+        aimingFromHighCover = false;
+        isBack = true;
+    }
+
+    private void ExitAndWalk()
+    {
+        if(poppedOut && _ir.MovementValue.y > 0)
+        {
+            movement.ExitCover();
+        }
+    }
+
+    private void PopOutAndShoot()
+    {
+        if (aimingFromHighCover && movement.weaponManager.canShoot)
+        {
+            poppedOut = true;
+            isBack = false;
+            highCornerReturnPos = transform.position;
+            transform.DOMove(shootFromHighCover, 0.25f);
+            movement.canMove = false;
+        }
+    }
+
+    private void BackInCover()
+    {
+        if (!movement.cover) return;
+        if (_ir.ADSValue) return;
+
+        if(poppedOut && !isBack)
+        {
+            ResetCover();
+            transform.DOMove(highCornerReturnPos, .25f);
+            movement.canMove = true;
+        }
+    }
+    #endregion
 }

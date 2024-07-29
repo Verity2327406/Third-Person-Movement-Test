@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class InputReader : MonoBehaviour, Controls.IPlayerActions
+public class InputReader : MonoBehaviour, Controls.IPlayerActions, Controls.INoControlsActions
 {
     #region Public Values
     public Vector2 MovementValue {  get; private set; }
@@ -13,10 +13,15 @@ public class InputReader : MonoBehaviour, Controls.IPlayerActions
     public bool isShooting {  get; private set; }
     public bool isShootingSemi {  get; private set; }
     public bool isReload {  get; private set; }
+    public bool isCover {  get; private set; }
     #endregion
 
     #region Private Values
     private Controls _controls;
+    #endregion
+
+    #region Events
+    public event Action exitCover;
     #endregion
 
     private void Start()
@@ -26,11 +31,21 @@ public class InputReader : MonoBehaviour, Controls.IPlayerActions
 
         _controls = new Controls();
         _controls.Player.SetCallbacks(this);
+        _controls.NoControls.SetCallbacks(this);
 
         _controls.Player.Enable();
     }
 
     private void OnDestroy()
+    {
+        _controls.Player.Disable();
+    }
+
+    public void EnableControls()
+    {
+        _controls.Player.Enable();
+    }
+    public void DisableControls()
     {
         _controls.Player.Disable();
     }
@@ -59,5 +74,15 @@ public class InputReader : MonoBehaviour, Controls.IPlayerActions
     public void OnReload(InputAction.CallbackContext context)
     {
         isReload = context.performed;
+    }
+
+    public void OnCover(InputAction.CallbackContext context)
+    {
+        isCover = context.performed;
+    }
+
+    public void OnExitCover(InputAction.CallbackContext context)
+    {
+        if(context.performed) exitCover?.Invoke();
     }
 }

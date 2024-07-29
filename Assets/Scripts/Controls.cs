@@ -71,6 +71,24 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Cover"",
+                    ""type"": ""Button"",
+                    ""id"": ""dfd03915-d673-48fb-97db-c1ee49c3f0e1"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ExitCover"",
+                    ""type"": ""Button"",
+                    ""id"": ""f3e8ccfe-e466-454c-b001-52e2df395782"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -172,8 +190,36 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""action"": ""Reload"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7cbfd31f-58bc-470f-8549-8ab40017d0bf"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cover"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""51f67c10-2048-4d6d-9b7b-5f5571ea8c80"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ExitCover"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""NoControls"",
+            ""id"": ""97d10d58-8c9e-4a91-bfdb-fe6e94236489"",
+            ""actions"": [],
+            ""bindings"": []
         }
     ],
     ""controlSchemes"": []
@@ -185,6 +231,10 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_Player_ADS = m_Player.FindAction("ADS", throwIfNotFound: true);
         m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
         m_Player_Reload = m_Player.FindAction("Reload", throwIfNotFound: true);
+        m_Player_Cover = m_Player.FindAction("Cover", throwIfNotFound: true);
+        m_Player_ExitCover = m_Player.FindAction("ExitCover", throwIfNotFound: true);
+        // NoControls
+        m_NoControls = asset.FindActionMap("NoControls", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -251,6 +301,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_ADS;
     private readonly InputAction m_Player_Fire;
     private readonly InputAction m_Player_Reload;
+    private readonly InputAction m_Player_Cover;
+    private readonly InputAction m_Player_ExitCover;
     public struct PlayerActions
     {
         private @Controls m_Wrapper;
@@ -260,6 +312,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         public InputAction @ADS => m_Wrapper.m_Player_ADS;
         public InputAction @Fire => m_Wrapper.m_Player_Fire;
         public InputAction @Reload => m_Wrapper.m_Player_Reload;
+        public InputAction @Cover => m_Wrapper.m_Player_Cover;
+        public InputAction @ExitCover => m_Wrapper.m_Player_ExitCover;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -284,6 +338,12 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Reload.started += instance.OnReload;
             @Reload.performed += instance.OnReload;
             @Reload.canceled += instance.OnReload;
+            @Cover.started += instance.OnCover;
+            @Cover.performed += instance.OnCover;
+            @Cover.canceled += instance.OnCover;
+            @ExitCover.started += instance.OnExitCover;
+            @ExitCover.performed += instance.OnExitCover;
+            @ExitCover.canceled += instance.OnExitCover;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -303,6 +363,12 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Reload.started -= instance.OnReload;
             @Reload.performed -= instance.OnReload;
             @Reload.canceled -= instance.OnReload;
+            @Cover.started -= instance.OnCover;
+            @Cover.performed -= instance.OnCover;
+            @Cover.canceled -= instance.OnCover;
+            @ExitCover.started -= instance.OnExitCover;
+            @ExitCover.performed -= instance.OnExitCover;
+            @ExitCover.canceled -= instance.OnExitCover;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -320,6 +386,44 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // NoControls
+    private readonly InputActionMap m_NoControls;
+    private List<INoControlsActions> m_NoControlsActionsCallbackInterfaces = new List<INoControlsActions>();
+    public struct NoControlsActions
+    {
+        private @Controls m_Wrapper;
+        public NoControlsActions(@Controls wrapper) { m_Wrapper = wrapper; }
+        public InputActionMap Get() { return m_Wrapper.m_NoControls; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(NoControlsActions set) { return set.Get(); }
+        public void AddCallbacks(INoControlsActions instance)
+        {
+            if (instance == null || m_Wrapper.m_NoControlsActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_NoControlsActionsCallbackInterfaces.Add(instance);
+        }
+
+        private void UnregisterCallbacks(INoControlsActions instance)
+        {
+        }
+
+        public void RemoveCallbacks(INoControlsActions instance)
+        {
+            if (m_Wrapper.m_NoControlsActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(INoControlsActions instance)
+        {
+            foreach (var item in m_Wrapper.m_NoControlsActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_NoControlsActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public NoControlsActions @NoControls => new NoControlsActions(this);
     public interface IPlayerActions
     {
         void OnMovement(InputAction.CallbackContext context);
@@ -327,5 +431,10 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         void OnADS(InputAction.CallbackContext context);
         void OnFire(InputAction.CallbackContext context);
         void OnReload(InputAction.CallbackContext context);
+        void OnCover(InputAction.CallbackContext context);
+        void OnExitCover(InputAction.CallbackContext context);
+    }
+    public interface INoControlsActions
+    {
     }
 }
