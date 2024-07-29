@@ -116,6 +116,7 @@ public class AimStateManager : MonoBehaviour
         camFollowPos.localPosition = Vector3.Lerp(camFollowPos.localPosition, newFollwPos, shoulderSwapSpeed * Time.deltaTime);
     }
 
+    #region Cover
     public void ShootFromHighCoverSetup(Vector3 direction, bool inHighCover)
     {
         shootFromHighCover = transform.position + (direction.normalized * shootFromCoverOffset);
@@ -124,11 +125,8 @@ public class AimStateManager : MonoBehaviour
 
     public void ResetCam()
     {
-        Debug.Log(xAxis);
-        Debug.Log(oldAxis);
         xAxis = oldAxis;
     }
-
     public void PrepCam()
     {
         xAxis = 0;
@@ -151,7 +149,7 @@ public class AimStateManager : MonoBehaviour
 
     private void PopOutAndShoot()
     {
-        if (aimingFromHighCover)
+        if (aimingFromHighCover && movement.weaponManager.canShoot)
         {
             poppedOut = true;
             isBack = false;
@@ -173,4 +171,5 @@ public class AimStateManager : MonoBehaviour
             movement.canMove = true;
         }
     }
+    #endregion
 }

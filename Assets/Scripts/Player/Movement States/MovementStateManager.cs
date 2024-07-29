@@ -199,14 +199,12 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
             // High cover, so cant always shoot
             inHighCover = true;
             weaponManager.canShoot = false;
-            Debug.Log("High");
         }
         else
         {
             // Low cover, so can always shoot
             inHighCover = false;
             weaponManager.canShoot = true;
-            Debug.Log("Low");
         }
     }
 
@@ -254,8 +252,6 @@ public class MovementStateManager : MonoBehaviour, ICharacterMover
         _a.SetBool("Running", false);
         bool didRightCoverDetectHit = Physics.Raycast(rightCoverDetector.position, rightCoverDetector.forward, horizontalCoverDetectorLength, coverLayerMask);
         bool didLeftCoverDetectHit = Physics.Raycast(leftCoverDetector.position, leftCoverDetector.forward, horizontalCoverDetectorLength, coverLayerMask);
-
-        Debug.Log("Right: " + didRightCoverDetectHit + ", Left: " + didLeftCoverDetectHit);
 
         Debug.DrawRay(rightCoverDetector.position, rightCoverDetector.forward * horizontalCoverDetectorLength, Color.white);
         Debug.DrawRay(leftCoverDetector.position, leftCoverDetector.forward * horizontalCoverDetectorLength, Color.white);
