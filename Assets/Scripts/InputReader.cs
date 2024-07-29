@@ -22,6 +22,7 @@ public class InputReader : MonoBehaviour, Controls.IPlayerActions, Controls.INoC
 
     #region Events
     public event Action exitCover;
+    public event Action interact;
     #endregion
 
     private void Start()
@@ -84,5 +85,10 @@ public class InputReader : MonoBehaviour, Controls.IPlayerActions, Controls.INoC
     public void OnExitCover(InputAction.CallbackContext context)
     {
         if(context.performed) exitCover?.Invoke();
+    }
+
+    public void OnInteract(InputAction.CallbackContext context)
+    {
+        if(context.performed) interact?.Invoke();
     }
 }
