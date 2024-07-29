@@ -15,6 +15,8 @@ public class Interactor : MonoBehaviour
     #endregion
 
     private InputReader _ir;
+    [SerializeField] private Transform handBone;
+    private GameObject _item;
 
     IInteractable _closeInteractable;
 
@@ -45,12 +47,7 @@ public class Interactor : MonoBehaviour
 
     private void Interact()
     {
-
         _closeInteractable.Interact();
-
-        //if(validColliders.Count > 0)
-        //    if(validColliders[0].TryGetComponent(out IInteractable interactObj))
-        //        interactObj.Interact();
     }
 
     private void CheckForInteractions()
@@ -101,5 +98,22 @@ public class Interactor : MonoBehaviour
         }
 
         interactionText.text = _closeInteractable.GetDescription();
+    }
+
+    public void SetupAnim(Transform item)
+    {
+        _item = item.gameObject;
+    }
+
+    public void OnAnimationGrabbedItem()
+    {
+        if(_item != null)
+            _item.transform.parent = handBone;
+    }
+
+    public void OnAnimationStoredItem()
+    {
+        if (_item != null)
+            Destroy(_item);
     }
 }
